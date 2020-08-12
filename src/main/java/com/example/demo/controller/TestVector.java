@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author: 彭志鹏
@@ -58,6 +58,32 @@ public class TestVector {
             }
         },"B").start();*/
 
+        /*//火车票列表
+        final List<String> tickets = new Vector<>();
+        //初始化票据池
+        for(int i=0;i<1000;i++){
+            tickets.add("火车票" + i);
+        }
+        //10个窗口售票
+        for(int i=0;i<10;i++){
+            *//*new Thread(){
+                @Override
+                public void run() {
+                    while(true){
+                        System.out.println(Thread.currentThread().getName() +"——"+ tickets.remove(0));
+                    }
+                };
+            }.start();*//*
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true){
+                        System.out.println(Thread.currentThread().getName() +"——"+ tickets.remove(0));
+                    }
+                }
+            },String.valueOf(i)).start();
+        }*/
+
         TestVector tt = new TestVector();
         tt.train();
     }
@@ -66,33 +92,37 @@ public class TestVector {
      * 基本上所有的集合类都有一个叫做快速失败（Fail-Fast)的校验机制，当一个集合在被多个线程修改并访问时，
      * 就可能会出现 ConcurrentModificationException异常，
      * 这是为了确保集合方法一致而设置的保护措施
+     *
+     * 这与线程同 步是两码事，线程同步是为了保护集合中的数据不被脏读、脏写而设置的，我们来看线程安 全到底用在什么地方
      */
 
     public void train(){
         //火车票列表
-        final List<String> tickets = new Vector<>();
+        final List<String> tickets = Collections.synchronizedList(new ArrayList<>());
         //初始化票据池
         for(int i=0;i<1000;i++){
             tickets.add("火车票" + i);
         }
-         //10个窗口售票
+        Lock lock = new ReentrantLock();
+
+        //10个窗口售票
          for(int i=0;i<5;i++){
              new Thread(){
                     @Override
                     public void run() {
-                         while(true){
-                            System.out.println(Thread.currentThread().getId() +"——"+ tickets.remove(0));
+                        lock.lock();
+                        boolean a = tickets.size()>0;
+                        while(a){
+                            if(tickets.size()<=0){
+                                lock.unlock();
+                                break;
+                            }
+                            System.out.println(tickets.size());
+                            System.out.println(Thread.currentThread().getName() +"——"+ tickets.remove(0));
                          }
                     };
             }.start();
-             /*new Thread(new Runnable() {
-                 @Override
-                 public void run() {
-                     while(true){
-                         System.out.println(Thread.currentThread().getId() +"——"+ tickets.remove(0));
-                     }
-                 }
-             }).start();*/
+
          }
 
     }

@@ -44,7 +44,8 @@ public class TestDemo2 {
                     Integer integer = iterator.next();
                     if (integer == 2){
                         //iterator.remove();
-                        list.remove(integer);
+                        //list.remove(integer);
+                        list.add(5);
                     }
                     try {
                         Thread.sleep(100);
