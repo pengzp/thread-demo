@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import org.springframework.beans.BeanUtils;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -10,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @DateTime: 2020/7/31 15:31
  * @Description:
  */
-public class TestDemo2 {
+public class TestCopyOnWrite {
 
     public static void main(String[] args) {
 
@@ -19,6 +21,7 @@ public class TestDemo2 {
         list.add(2);
         list.add(3);
         list.add(4);
+
 
         new Thread(new Runnable() {
             @Override
@@ -56,5 +59,7 @@ public class TestDemo2 {
                 }
             }
         },"B").start();
+
+
     }
 }
